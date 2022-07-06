@@ -114,12 +114,13 @@ const Home: NextPage = () => {
   //fetchUsers()
   return (
     <div>
-      <h1>TODO APP</h1>
-      
+      <button type="button" className="w-[79px] h-[43px] bg-[#d9d9d9]" ><a href='http://localhost:3000/api/auth/signin'>로그인</a></button>
+      <button type="button" onClick={() => signOut()} className="w-[79px] h-[43px] bg-[#d9d9d9]" >로그아웃</button>
+      <div>{status === "authenticated" ? (<div className="text-white">로그인중</div>) : (<div className="text-white">로구아웃즁</div>)}</div>
       <div className="w-full h-[1024px] relative overflow-hidden bg-[#ed9869]">
-        <p className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-center text-black">
-          TODO APP<div>{status === "authenticated" ? (<div onClick={() => signOut()}>로그인중</div>) : (<div>로구아웃즁</div>)}</div>
-        </p>
+        <h1 className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-center text-black">
+          TODO APP
+        </h1>
         <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[297px] rounded-[30px] text-[30px] text-center bg-[#d9d9d9]"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[297px] rounded-[30px] bg-[#d9d9d9]">add</button>
         <p className="w-[203px] h-[42px] absolute left-[618px] top-[374px] text-[32px] text-center text-black">
