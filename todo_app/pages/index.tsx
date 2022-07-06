@@ -68,7 +68,7 @@ const Home: NextPage = () => {
     }
   }
 
-  const clickfin = (id:string) =>{
+  const clickredo = (id:string) =>{
     updateDoc(doc(db, "TODOLIST", id), {
       done: false
      });
@@ -113,49 +113,57 @@ const Home: NextPage = () => {
     <div>
       <h1>TODO APP</h1>
       
-      <div className="w-[1440px] h-[1024px] relative overflow-hidden bg-white">
-        <p className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-left text-black">
+      <div className="w-[1440px] h-[1024px] relative overflow-hidden bg-[#ed9869]">
+        <p className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-center text-black">
           TODO APP
         </p>
-        <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[297px] bg-[#d9d9d9]"></input>
-        <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[297px] bg-[#d9d9d9]">add</button>
-        <svg
-          width={46}
-          height={23}
-          viewBox="0 0 46 23"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute left-[1086px] top-[332px]"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M45.085 12.0357C45.657 11.4365 45.635 10.487 45.0357 9.91497L35.2704 0.593544C34.6712 0.0215352 33.7217 0.0436164 33.1497 0.642864C32.5777 1.24211 32.5997 2.1916 33.199 2.76361L41.8793 11.0493L33.5935 19.7296C33.0215 20.3288 33.0436 21.2783 33.6429 21.8503C34.2421 22.4223 35.1916 22.4003 35.7636 21.801L45.085 12.0357ZM1.03487 13.4996L44.0349 12.4996L43.9651 9.50041L0.965126 10.5004L1.03487 13.4996Z"
-            fill="black"
-          />
-        </svg>
-        <div className="w-[627px] h-[316px] absolute left-[406px] top-[396px] bg-[#d9d9d9]">
+        <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[297px] rounded-[30px] text-[30px] text-center bg-[#d9d9d9]"></input>
+        <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[297px] rounded-[30px] bg-[#d9d9d9]">add</button>
+        <p className="w-[203px] h-[42px] absolute left-[618px] top-[374px] text-[32px] text-center text-black">
+          Things to do
+        </p>
+        <div className="w-[627px] h-[316px] absolute left-[406px] top-[423px] bg-[#d9d9d9] rounded-[30px] text-center text-[20px]">
           <ul>
-            {items.filter(({done}) => !done ).map(({id,message,done}) =>(
-              <li key={id} onClick = {()=>handleToggle(id)} className ={cx("item", {done})}>
-                {message} &emsp; HELLO
+            {items.filter(({done, id}) => !done && id !="").map(({id,message,done}) =>(
+              <li key={id} className ={cx("item", {done})}>
+                {message} &emsp; <button type="button" onClick = {()=>handleToggle(id)} className="w-80px] h-[40px] bg-[#951D82]">FINISH</button>
               </li>
             ))}
           </ul>
 
         </div>
-        <div className="w-[627px] h-[137px] absolute left-[406px] top-[797px] bg-[#d9d9d9]">
+        <div className="w-[627px] h-[137px] absolute left-[406px] top-[797px] bg-[#d9d9d9] text-center text-[20px] rounded-[30px]">
           <div>
             {items.filter(({done}) => done).map(({id,message,done}) =>(
               <div>
-                <div key={id} onClick = {()=>clickfin(id)} className ={cx("item", {done})}>
-                  {message}
+                <div key={id} className ={cx("item", {done})}>
+                  {message} &emsp; <button type="button" onClick = {()=>clickredo(id)} className="w-[40px] h-[40px] bg-[#d9d9d9]">redo</button>
+                  &emsp;<button type="button" onClick = {()=>clickdel(id)} className="w-[40px] h-[40px] bg-[#d9d9d9]"><svg
+                    width={24}
+                    height={24}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6 relative"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20"
+                      stroke="#111827"
+                      stroke-width={2}
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg></button>                   
                 </div> 
-                <button type="button" onClick={()=>clickdel(id)} className="w-[29px] h-[26px] bg-[#d41e1e]">del</button>
               </div>
             ))}
           </div>
         </div>
-        <div onClick={()=>fetchUsers()} className="w-[222px] h-[150px] absolute left-[1120px] top-[511px] bg-[#d9d9d9]" />
+        <p className="w-[255px] h-[39px] absolute left-[593px] top-[749px] text-[32px] text-center text-black">
+          Finished!
+        </p>
+        <button type="button" onClick={()=>fetchUsers()} className="w-[222px] h-[150px] absolute left-[1120px] top-[511px] rounded-[30px] bg-[#d9d9d9]" >불러오기</button>
       </div>;
 
     </div>
