@@ -1,26 +1,48 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import {db} from "../../../firebase/firebase";
+import {
+  collection,
+  doc,
+  query,
+  orderBy,
+  getDocs,
+  getDoc,
+  addDoc, 
+  updateDoc,
+  setDoc,
+  deleteDoc,
+  serverTimestamp 
+} from "firebase/firestore";
+
+const checkUsers = async (ID) => {
+    const userRef = doc(db, "LOGINDB", ID);
+    const userSnap = await getDoc(userRef); // 데이터 스냅 받아오기 - 비동기처리
+    const data = userSnap.data();
+    return data["PW"];
+}
 
 
 export default NextAuth({
     providers: [
         CredentialsProvider({
-            // The name to display on the sign in form (e.g. "Sign in with...")
             name: "ID, PW",
-            // The credentials is used to generate a suitable form on the sign in page.
-            // You can specify whatever fields you are expecting to be submitted.
-            // e.g. domain, username, password, 2FA token, etc.
-            // You can pass any HTML attribute to the <input> tag through the object.
+
             credentials: {
-                username: { label: "Username", type: "text", placeholder: "jsmith" },
-                password: { label: "Password", type: "password" }
+                username: { label: "Username", type: "text", placeholder: "ID" },
+                password: { label: "Password", type: "password", placeholder: "PW" }
             },
             async authorize(credentials, req) {
                 // Add logic here to look up the user from the credentials supplied
-                const user = { id: 1, name: "J Smith", email: "jsmith@example.com" }
-
-                if (user) {
+                const userRef = doc(db, "LOGINDB", credentials?.username);
+                const userSnap = await getDoc(userRef); // 데이터 스냅 받아오기 - 비동기처리
+                const data = userSnap.data();
+                console.log(credentials?.username)
+                console.log(data["PW"])
+                
+                if (data["PW"] == credentials?.password) {
                     // Any object returned will be saved in `user` property of the JWT
+                    const user = { id: 1, name: "J Smith", email: "jsmith@example.com" }
                     return user
                 } else {
                     // If you return null or false then the credentials will be rejected
