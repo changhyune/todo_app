@@ -69,6 +69,10 @@ const Home: NextPage = () => {
 
   const clickdel = (id:string) =>{
     deleteDoc(doc(db, "TODOLIST", id));
+    const _items = items.filter((item)=>{
+      return item.id != id;
+    });
+    setItems(_items);
   }
 
 
@@ -99,18 +103,15 @@ const Home: NextPage = () => {
       setItems([
         {
           id: data[i].id,
-          message: "",
+          message:data[i]["message"],
           done: false,
         }, 
-        ...items
+        ...items,
       ]);
-      setTodoItem("");
-
     }
-    console.log(data[0]["message"])
-    return data;
+    //return data;
   }
-
+  
   return (
     <div>
       <h1>TODO APP</h1>
@@ -139,17 +140,16 @@ const Home: NextPage = () => {
           <ul>
             {items.filter(({done}) => !done).map(({id,message,done}) =>(
               <li key={id} onClick = {()=>handleToggle(id)} className ={cx("item", {done})}>
-                {message}
+                {message} &emsp; HELLO
               </li>
             ))}
 
             {items.filter(({done}) => done).map(({id,message,done}) =>(
               <li key={id} onClick = {()=>clickdel(id)} className ={cx("item", {done})}>
-                {message}
+                {message} <></>
               </li>
             ))}
 
-            <li>{todoItem}</li>
           </ul>
 
         </div>
