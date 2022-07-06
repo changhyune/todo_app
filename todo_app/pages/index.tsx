@@ -11,6 +11,7 @@ import {
   orderBy,
   getDocs,
   addDoc, 
+  updateDoc,
   setDoc,
   deleteDoc,
   serverTimestamp 
@@ -67,6 +68,13 @@ const Home: NextPage = () => {
     }
   }
 
+  const clickfin = (id:string) =>{
+    updateDoc(doc(db, "TODOLIST", id), {
+      done: false
+     });
+    handleToggle(id);
+  }
+
   const clickdel = (id:string) =>{
     deleteDoc(doc(db, "TODOLIST", id));
     const _items = items.filter((item)=>{
@@ -74,11 +82,14 @@ const Home: NextPage = () => {
     });
     setItems(_items);
   }
-
+  
 
   const handleToggle = (id:string) =>{
     const _items = items.map((item)=>{
       if(item.id === id){
+        if(item.done == false){
+          updateDoc(doc(db, "TODOLIST", id), {done: true});
+        };
         return{
           ...item,
           done: !item.done,
@@ -94,24 +105,10 @@ const Home: NextPage = () => {
     // ... try, catch 생략
     const usersCollectionRef = collection(db, 'TODOLIST'); // 참조
     const userSnap = await getDocs(usersCollectionRef); // 데이터 스냅 받아오기 - 비동기처리
-    const data = userSnap.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-    }));
-    for(var i =0; i < data.length; i++){
-      console.log(data[i].id)
-      setItems([
-        {
-          id: data[i].id,
-          message:data[i]["message"],
-          done: false,
-        }, 
-        ...items,
-      ]);
-    }
-    //return data;
+    const data = userSnap.docs.map(doc => ({...doc.data(), id: doc.id}));
+    setItems(data);
   }
-  
+  //fetchUsers()
   return (
     <div>
       <h1>TODO APP</h1>
@@ -138,24 +135,27 @@ const Home: NextPage = () => {
         </svg>
         <div className="w-[627px] h-[316px] absolute left-[406px] top-[396px] bg-[#d9d9d9]">
           <ul>
-            {items.filter(({done}) => !done).map(({id,message,done}) =>(
+            {items.filter(({done}) => !done ).map(({id,message,done}) =>(
               <li key={id} onClick = {()=>handleToggle(id)} className ={cx("item", {done})}>
                 {message} &emsp; HELLO
               </li>
             ))}
-
-            {items.filter(({done}) => done).map(({id,message,done}) =>(
-              <li key={id} onClick = {()=>clickdel(id)} className ={cx("item", {done})}>
-                {message} <></>
-              </li>
-            ))}
-
           </ul>
 
         </div>
-        <button type="button" onClick={fetchUsers} className="w-[222px] h-[150px] absolute left-[1120px] top-[511px] bg-[#d9d9d9]" />
-
-
+        <div className="w-[627px] h-[137px] absolute left-[406px] top-[797px] bg-[#d9d9d9]">
+          <div>
+            {items.filter(({done}) => done).map(({id,message,done}) =>(
+              <div>
+                <div key={id} onClick = {()=>clickfin(id)} className ={cx("item", {done})}>
+                  {message}
+                </div> 
+                <button type="button" onClick={()=>clickdel(id)} className="w-[29px] h-[26px] bg-[#d41e1e]">del</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div onClick={()=>fetchUsers()} className="w-[222px] h-[150px] absolute left-[1120px] top-[511px] bg-[#d9d9d9]" />
       </div>;
 
     </div>
