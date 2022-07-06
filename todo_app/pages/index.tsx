@@ -12,6 +12,7 @@ import {
   orderBy,
   getDocs,
   addDoc, 
+  getDoc,
   updateDoc,
   setDoc,
   deleteDoc,
@@ -103,7 +104,13 @@ const Home: NextPage = () => {
 
     setItems(_items);
   };
-
+  const checkUsers = async (ID) => {
+    const userRef = doc(db, "LOGINDB", ID);
+    const userSnap = await getDoc(userRef); // 데이터 스냅 받아오기 - 비동기처리
+    const data = userSnap.data();
+    console.log(data["PW"])
+    return data;
+  }
   const fetchUsers = async () => {
     // ... try, catch 생략
     const usersCollectionRef = collection(db, 'TODOLIST'); // 참조
