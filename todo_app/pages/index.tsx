@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { useState } from 'react';
 import cx from 'classnames';
 import {v4 as uuidv4} from "uuid";
+import { signOut, useSession } from "next-auth/react";
 
 import {db} from "../firebase/firebase";
 import {
@@ -30,6 +31,8 @@ const Home: NextPage = () => {
       done: false,
     },
   ]);
+  const { data: session, status } = useSession();
+  //if (status === "authenticated") console.log("session", session);
 
   // const handleAdd = () =>{
   //     setItems([
@@ -113,9 +116,9 @@ const Home: NextPage = () => {
     <div>
       <h1>TODO APP</h1>
       
-      <div className="w-[1440px] h-[1024px] relative overflow-hidden bg-[#ed9869]">
+      <div className="w-full h-[1024px] relative overflow-hidden bg-[#ed9869]">
         <p className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-center text-black">
-          TODO APP
+          TODO APP<div>{status === "authenticated" ? (<div onClick={() => signOut()}>로그인중</div>) : (<div>로구아웃즁</div>)}</div>
         </p>
         <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[297px] rounded-[30px] text-[30px] text-center bg-[#d9d9d9]"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[297px] rounded-[30px] bg-[#d9d9d9]">add</button>
@@ -132,7 +135,7 @@ const Home: NextPage = () => {
           </ul>
 
         </div>
-        <div className="w-[627px] h-[137px] absolute left-[406px] top-[797px] bg-[#d9d9d9] text-center text-[20px] rounded-[30px]">
+        <div className="w-[627px] h-[316px] absolute left-[406px] top-[797px] bg-[#d9d9d9] text-center text-[20px] rounded-[30px]">
           <div>
             {items.filter(({done}) => done).map(({id,message,done}) =>(
               <div>
