@@ -32,6 +32,7 @@ const Home: NextPage = () => {
       done: false,
     },
   ]);
+
   const { data: session, status } = useSession();
   //if (status === "authenticated") console.log("session", session);
 
@@ -87,7 +88,6 @@ const Home: NextPage = () => {
     setItems(_items);
   }
   
-
   const handleToggle = (id:string) =>{
     const _items = items.map((item)=>{
       if(item.id === id){
@@ -104,19 +104,14 @@ const Home: NextPage = () => {
 
     setItems(_items);
   };
-  const checkUsers = async (ID) => {
-    const userRef = doc(db, "LOGINDB", ID);
-    const userSnap = await getDoc(userRef); // 데이터 스냅 받아오기 - 비동기처리
-    const data = userSnap.data();
-    console.log(data["PW"])
-    return data;
-  }
+  
   const fetchUsers = async () => {
     // ... try, catch 생략
     const usersCollectionRef = collection(db, 'TODOLIST'); // 참조
     const userSnap = await getDocs(usersCollectionRef); // 데이터 스냅 받아오기 - 비동기처리
     const data = userSnap.docs.map(doc => ({...doc.data(), id: doc.id}));
     setItems(data);
+    console.log(session["user"]["name"])
   }
   //fetchUsers()
   return (
