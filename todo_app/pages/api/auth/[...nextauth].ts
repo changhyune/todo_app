@@ -33,7 +33,7 @@ export default NextAuth({
                 
                 if (data["PW"] == credentials?.password) {
                     // Any object returned will be saved in `user` property of the JWT
-                    const user = { id: 1, name: credentials?.userid, email: "jsmith@example.com" }
+                    const user = { id: 1, name: credentials?.userid, email: data["name"] }
                     return user
                 } else {
                     // If you return null or false then the credentials will be rejected

@@ -56,11 +56,14 @@ const Home: NextPage = () => {
   const clickadd = ()=>{
     if (todoItem){
       var newid = uuidv4()
-      setDoc(doc(db, "TODOLIST", newid), {
-        message: todoItem,
-        done: false
-      });
-      console.log(newid)
+      if(status === "authenticated"){
+        setDoc(doc(db, "TODOLIST", newid), {
+          message: todoItem,
+          done: false,
+          username: session["user"]["name"]
+        });
+        console.log(newid)
+      }
       setItems([
         {
           id: newid,
@@ -74,14 +77,16 @@ const Home: NextPage = () => {
   }
 
   const clickredo = (id:string) =>{
-    updateDoc(doc(db, "TODOLIST", id), {
-      done: false
-     });
+    if(status === "authenticated"){
+      updateDoc(doc(db, "TODOLIST", id), {
+        done: false
+      });
+    }
     handleToggle(id);
   }
 
   const clickdel = (id:string) =>{
-    deleteDoc(doc(db, "TODOLIST", id));
+    if(status === "authenticated"){deleteDoc(doc(db, "TODOLIST", id));}
     const _items = items.filter((item)=>{
       return item.id != id;
     });
@@ -92,7 +97,7 @@ const Home: NextPage = () => {
     const _items = items.map((item)=>{
       if(item.id === id){
         if(item.done == false){
-          updateDoc(doc(db, "TODOLIST", id), {done: true});
+          if(status === "authenticated"){updateDoc(doc(db, "TODOLIST", id), {done: true});}
         };
         return{
           ...item,
@@ -110,20 +115,22 @@ const Home: NextPage = () => {
     const usersCollectionRef = collection(db, 'TODOLIST'); // 참조
     const userSnap = await getDocs(usersCollectionRef); // 데이터 스냅 받아오기 - 비동기처리
     const data = userSnap.docs.map(doc => ({...doc.data(), id: doc.id}));
-    setItems(data);
-    console.log(session["user"]["name"])
+    if(status === "authenticated"){
+      const filterdata = data.filter(data => data["username"]== session["user"]["name"])
+      setItems(filterdata);
+    }
+    console.log(session)
   }
   //fetchUsers()
   return (
     <div>
-      <button type="button" className="w-[79px] h-[43px] bg-[#d9d9d9]" ><a href='http://localhost:3000/api/auth/signin'>로그인</a></button>
-      <button type="button" onClick={() => signOut()} className="w-[79px] h-[43px] bg-[#d9d9d9]" >로그아웃</button>
-      <div>{status === "authenticated" ? (<div className="text-white">로그인중</div>) : (<div className="text-white">로구아웃즁</div>)}</div>
+      <div>{status === "authenticated" ? (<button type="button" onClick={() => signOut()} className="w-[79px] h-[43px] bg-[#d9d9d9]" >로그아웃</button>) : (<button type="button" className="w-[79px] h-[43px] bg-[#d9d9d9]" ><a href='http://localhost:3000/api/auth/signin'>로그인</a></button>)}</div>
+      <div>{status === "authenticated" ? (<div className="text-white">{session["user"]["email"]}님 반갑습니다.</div>) : (<div className="text-white"></div>)}</div>
       <div className="w-full h-[1024px] relative overflow-hidden bg-[#ed9869]">
-        <h1 className="w-[436px] h-[164px] absolute left-[502px] top-[92px] text-[64px] text-center text-black">
+        <h1 className="w-[436px] h-[164px] absolute left-[40px] top-[30px] text-[64px] text-center text-black">
           TODO APP
         </h1>
-        <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[297px] rounded-[30px] text-[30px] text-center bg-[#d9d9d9]"></input>
+        <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[4px] top-[140px] rounded-[30px] text-[30px] text-center bg-[#d9d9d9]"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[297px] rounded-[30px] bg-[#d9d9d9]">add</button>
         <p className="w-[203px] h-[42px] absolute left-[618px] top-[374px] text-[32px] text-center text-black">
           Things to do
