@@ -8,8 +8,6 @@ import {db} from "../firebase/firebase";
 import {
   collection,
   doc,
-  query,
-  orderBy,
   getDocs,
   addDoc, 
   getDoc,
@@ -185,7 +183,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <p className="w-[255px] h-[39px] absolute left-[915px] top-[220px] text-[32px] text-center text-black">
-          다 했다!
+          한 일
         </p>
       </div>;
 
