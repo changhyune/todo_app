@@ -19,6 +19,14 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 
+import dayjs from 'dayjs';
+import "dayjs/locale/ko";
+dayjs.locale("ko")
+
+
+const today = dayjs().format("YYYY년 MM월 DD일 dddd")
+
+
 
 const Home: NextPage = () => {
 
@@ -34,23 +42,6 @@ const Home: NextPage = () => {
   ]);
 
   const { data: session, status } = useSession();
-  //if (status === "authenticated") console.log("session", session);
-
-  // const handleAdd = () =>{
-  //     setItems([
-  //       {
-  //         id:"",
-  //         message: todoItem,
-  //         done: false,
-  //       }, 
-  //       ...items
-  //     ]);
-  //     setTodoItem("");
-  // };
-
-  const handledel = () =>{
-    
-  };
 
   //파이어베이스에 TODOlist 추가
   const clickadd = ()=>{
@@ -111,9 +102,8 @@ const Home: NextPage = () => {
   };
   
   const fetchUsers = async () => {
-    // ... try, catch 생략
-    const usersCollectionRef = collection(db, 'TODOLIST'); // 참조
-    const userSnap = await getDocs(usersCollectionRef); // 데이터 스냅 받아오기 - 비동기처리
+    const usersCollectionRef = collection(db, 'TODOLIST'); 
+    const userSnap = await getDocs(usersCollectionRef); 
     const data = userSnap.docs.map(doc => ({...doc.data(), id: doc.id}));
     if(status === "authenticated"){
       const filterdata = data.filter(data => data["username"]== session["user"]["name"])
@@ -125,15 +115,16 @@ const Home: NextPage = () => {
     }
     console.log(session)
   }
-  //fetchUsers()
+
   return (
     <div>
       <div>{status === "authenticated" ? (<button type="button" onClick={() => signOut()} className="w-[79px] h-[43px] bg-[#white] text-white" >로그아웃</button>) : (<button type="button" className="w-[79px] h-[43px] bg-[#white] text-white" ><a href='http://localhost:3000/api/auth/signin'>로그인</a></button>)}</div>
       <div>{status === "authenticated" ? (<div className="text-white">{session["user"]["email"]}님 반갑습니다.</div>) : (<div className="text-white"></div>)}</div>
       <div className="w-full h-[1024px] relative overflow-hidden bg-[#EADBBD]">
         <h1 className="w-[436px] h-[164px] absolute left-[502px] top-[30px] text-[64px] text-center text-black">
-          TODO APP
+          TODO APP 
         </h1>
+        <div className="absolute left-[1200px]">{today}</div>
         <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[140px] rounded-[30px] text-[30px] text-center bg-[#030220] text-white"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[140px] rounded-[17px] text-white bg-[#030220]">할 일 추가</button>
         <button type="button" onClick={()=>fetchUsers()} className="w-[74px] h-[70px] absolute left-[1180px] top-[140px] rounded-[17px] bg-[#030220] text-white" >불러오기</button>

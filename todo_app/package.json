@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "classnames": "^2.3.1",
+    "dayjs": "^1.11.3",
     "firebase": "^9.8.4",
     "firebaseui": "^6.0.1",
     "firestore": "^1.1.6",
