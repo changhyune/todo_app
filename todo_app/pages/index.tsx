@@ -1,8 +1,9 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import cx from 'classnames';
 import {v4 as uuidv4} from "uuid";
 import { signOut, useSession } from "next-auth/react";
+import moment from "moment";
 
 import {db} from "../firebase/firebase";
 import {
@@ -17,30 +18,41 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 
-import dayjs from 'dayjs';
-import "dayjs/locale/ko";
-dayjs.locale("ko")
-
-
-const today = dayjs().format("YYYY년 MM월 DD일 dddd")
-
 
 
 const Home: NextPage = () => {
 
-
   const [todoItem, setTodoItem] = useState("");
-  const [color, setColor] = useState<string>("");
-
+  
   const [items, setItems] = useState([
     {
       id: "",
       message: "",
       done: false,
+      important: 3,
     },
   ]);
 
   const { data: session, status } = useSession();
+  const [count, setCount] = useState(0);
+
+  let timer: any = null;
+  const [time, setTime] = useState(moment());
+  useEffect(() => {
+    timer = setInterval(() => {
+      setTime(moment());
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const counter= function(nb:number){
+    setCount(count+1)
+    if (count==50){
+      window.alert("50");
+    }
+  }
 
   //파이어베이스에 TODOlist 추가
   const clickadd = ()=>{
@@ -50,7 +62,8 @@ const Home: NextPage = () => {
         setDoc(doc(db, "TODOLIST", newid), {
           message: todoItem,
           done: false,
-          username: session["user"]["name"]
+          username: session["user"]["name"],
+          important: 3
         });
       }
       setItems([
@@ -58,6 +71,7 @@ const Home: NextPage = () => {
           id: newid,
           message: todoItem,
           done: false,
+          important :3,
         }, 
         ...items,
       ]);
@@ -114,16 +128,28 @@ const Home: NextPage = () => {
     console.log(session)
   }
 
+  function colorChange() {
+    var color = Math.random() * 0xffffff
+    color = parseInt(color); 
+    color = color.toString(16);
+    var colorCode = "#" + color;
+
+    var bodyTag = document.getElementById("background");
+    bodyTag.style.backgroundColor = colorCode;
+    console.log(bodyTag.style.backgroundColor)
+    console.log(color)
+  }
+
   return (
     <div>
       <div>{status === "authenticated" ? (<button type="button" onClick={() => signOut()} className="w-[79px] h-[43px] bg-[#white] text-white" >로그아웃</button>) : (<button type="button" className="w-[79px] h-[43px] bg-[#white] text-white" ><a href='http://localhost:3000/api/auth/signin'>로그인</a></button>)}</div>
+      <button className="w-[77px] h-[20px] absolute left-[250px] top-[7px] text-white"  ><a href='http://10mg.co'>10mg</a></button>
       <div>{status === "authenticated" ? (<div className="text-white">{session["user"]["email"]}님 반갑습니다.</div>) : (<div className="text-white"></div>)}</div>
-      <div className="w-full h-[1024px] relative overflow-hidden bg-[#EADBBD]">
+      <div id="background" className="w-full h-[1024px] relative overflow-hidden bg-[#EADBBD]">
         <h1 className="w-[436px] h-[164px] absolute left-[502px] top-[30px] text-[64px] text-center text-black">
           TODO APP 
         </h1>
-        <div className="w-[77px] h-[77px] absolute left-[1038px] top-[30px] bg-[#7e2020]" />
-        <div className="absolute left-[1200px]">{today}</div>
+        <div className="absolute left-[1000px] text-[30px]">{time.format('YYYY년 MM월 DD일 dddd HH:MM:ss')}</div>
         <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[140px] rounded-[30px] text-[30px] text-center bg-[#030220] text-white"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[140px] rounded-[17px] text-white bg-[#030220]">할 일 추가</button>
         <button type="button" onClick={()=>fetchUsers()} className="w-[74px] h-[70px] absolute left-[1180px] top-[140px] rounded-[17px] bg-[#030220] text-white" >불러오기</button>
@@ -134,7 +160,7 @@ const Home: NextPage = () => {
           <ul>
             {items.filter(({done, id}) => !done && id !="").map(({id,message,done}) =>(
               <li key={id} className ={cx("item", {done})}>
-                {message} &emsp; <button type="button" onClick = {()=>handleToggle(id)} className="w-80px] h-[40px] ounded-[17px] bg-[#white]">끝</button>
+                {message} &emsp; <button type="button" onClick = {()=>handleToggle(id)} className="w-80px] h-[40px] rounded-[17px] bg-[#white]">끝</button>
               </li>
             ))}
           </ul>
@@ -186,6 +212,10 @@ const Home: NextPage = () => {
         <p className="w-[255px] h-[39px] absolute left-[915px] top-[220px] text-[32px] text-center text-black">
           한 일
         </p>
+        <button onClick={()=>counter(count)} className="w-[50px] h-[50px] absolute left-[1400px] top-[300px] rounded-[15px] bg-[#ff4444]" >{count}</button>
+        <div id="colorconvert">
+          <button onClick={()=>colorChange()} className="w-[80px] h-[50px] absolute left-[1400px] top-[400px] text-white rounded-[15px] bg-[#000000]" >배경색변환</button>
+        </div>
       </div>;
 
     </div>
