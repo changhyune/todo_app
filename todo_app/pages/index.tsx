@@ -30,6 +30,7 @@ const Home: NextPage = () => {
 
 
   const [todoItem, setTodoItem] = useState("");
+  const [color, setColor] = useState<string>("");
 
   const [items, setItems] = useState([
     {
@@ -51,7 +52,6 @@ const Home: NextPage = () => {
           done: false,
           username: session["user"]["name"]
         });
-        console.log(newid)
       }
       setItems([
         {
@@ -122,6 +122,7 @@ const Home: NextPage = () => {
         <h1 className="w-[436px] h-[164px] absolute left-[502px] top-[30px] text-[64px] text-center text-black">
           TODO APP 
         </h1>
+        <div className="w-[77px] h-[77px] absolute left-[1038px] top-[30px] bg-[#7e2020]" />
         <div className="absolute left-[1200px]">{today}</div>
         <input type="text" value={todoItem} onChange={(e)=> setTodoItem(e.target.value)} className="w-[629px] h-[68px] absolute left-[404px] top-[140px] rounded-[30px] text-[30px] text-center bg-[#030220] text-white"></input>
         <button type="button" onClick={clickadd} className="w-[84px] h-[68px] absolute left-[1066px] top-[140px] rounded-[17px] text-white bg-[#030220]">할 일 추가</button>
